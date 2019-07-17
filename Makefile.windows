@@ -1,0 +1,49 @@
+#
+#	Copyright (c) 1996-1997 Swiss Federal Institute of Technology, 
+#	Computer Engineering and Networks Laboratory. All rights reserved.
+#
+#	TOPSY - A Teachable Operating System. 
+#		Implementation of a tiny and simple micro kernel for
+#		teaching purposes.
+#
+#	Permission to use, copy, modify, and distribute this software and its
+#	documentation for any purpose, without fee, and without written 
+#	agreement is hereby granted, provided that the above copyright notice 
+#	and the following two paragraphs appear in all copies of this software.
+#
+#	IN NO EVENT SHALL THE SWISS FEDERAL INSTITUTE OF TECHNOLOGY, COMPUTER 
+#	ENGINEERING AND NETWORKS LABORATORY BE LIABLE TO ANY PARTY FOR
+#	DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING 
+#	OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 
+#	THE SWISS FEDERAL INSTITUTE OF TECHNOLOGY, COMPUTER ENGINEERING AND 
+#	NETWORKS LABORATORY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#	THE SWISS FEDERAL INSTITUTE OF TECHNOLOGY, COMPUTER ENGINEERING AND 
+#	NETWORKS LABORATORY, SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, 
+#	BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND 
+#	FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS 
+#	ON AN "AS IS" BASIS, AND THE SWISS FEDERAL INSTITUTE OF TECHNOLOGY, 
+#	COMPUTER ENGINEERING AND NETWORKS LABORATORY HAS NO OBLIGATION TO 
+# 	PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+#
+#	
+#	File:                  $Source: /proj/topsy/ss98/Topsy/RCS/Makefile.windows,v $
+# 	Author(s):             
+# 	Affiliation:           ETH Zuerich, TIK
+# 	Version:               $Revision: 1.1 $
+# 	Creation Date:         
+# 	Last Date of Change:   $Date: 1997/02/04 11:30:52 $      by: $Author: topsy $
+#	
+#	
+#	$Log: Makefile.windows,v $
+#	Revision 1.1  1997/02/04 11:30:52  topsy
+#	Initial revision
+#
+#
+
+GNUMIPS=/pcsoft/gcc-mips/bin
+CC=$(GNUMIPS)/gcc
+LD=$(GNUMIPS)/ld
+OBJCOPY=$(GNUMIPS)/objcopy
+SIZE=$(GNUMIPS)/size
+RM=/pcsoft/bin/rm

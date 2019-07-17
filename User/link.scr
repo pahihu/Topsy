@@ -1,0 +1,54 @@
+/*
+        Copyright (c) 1996-1997 Swiss Federal Institute of Technology, 
+        Computer Engineering and Networks Laboratory. All rights reserved.
+
+        TOPSY - A Teachable Operating System. 
+                Implementation of a tiny and simple micro kernel for
+                teaching purposes.
+
+        Permission to use, copy, modify, and distribute this software and its
+        documentation for any purpose, without fee, and without written 
+        agreement is hereby granted, provided that the above copyright notice 
+        and the following two paragraphs appear in all copies of this software.
+
+        File:                  $Source: /proj/topsy/ss98/Topsy/User/RCS/link.scr,v $
+        Author(s):             George Fankhauser
+        Affiliation:           ETH Zuerich, TIK
+        Version:               $Revision: 1.8 $
+        Creation Date:         
+        Last Date of Change:   $Date: 1998/03/26 19:15:21 $      by: $Author: gfa $
+        
+*/
+/*OUTPUT_FORMAT("ecoff-bigmips")*/
+OUTPUT_FORMAT("srec")
+
+/* since topsy sets up a decent context with sp and fp we can start at main */
+ENTRY(main) 
+
+/* the following is loaded into kernel address space but relocated for user */
+SECTIONS
+{
+    .text  0x00001000  : AT( 0x80040000 + ADDR(.text) ) {
+	    *(.init)
+	    *(.text)
+	    *(.fini)
+    }
+    /* force user data to follow user code */ 
+    . = ADDR(.text) + SIZEOF(.text);
+    . = ALIGN(0x1000);
+    .rdata . : AT ( 0x80020000 + ADDR(.rdata) ) {
+	    *(.rdata)
+    }
+    .data  . : AT ( 0x80020000 + ADDR(.data) ) {
+	    *(.data)
+    }
+    .sbss  . : AT ( 0x80020000 + ADDR(.sbss) ) {
+	    *(.sbss)
+	    *(.scommon)
+    }
+    .bss  .  : AT ( 0x80020000 + ADDR(.bss) ) {
+	    *(.bss)
+	    *(COMMON)
+    }
+}
+ 

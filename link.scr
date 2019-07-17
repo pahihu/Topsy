@@ -1,0 +1,52 @@
+/*
+        Copyright (c) 1996-1997 Swiss Federal Institute of Technology, 
+        Computer Engineering and Networks Laboratory. All rights reserved.
+
+        TOPSY - A Teachable Operating System. 
+                Implementation of a tiny and simple micro kernel for
+                teaching purposes.
+
+        Permission to use, copy, modify, and distribute this software and its
+        documentation for any purpose, without fee, and without written 
+        agreement is hereby granted, provided that the above copyright notice 
+        and the following two paragraphs appear in all copies of this software.
+
+        File:                  $Source: /proj/topsy/ss98/Topsy/RCS/link.scr,v $
+        Author(s):             George Fankhauser
+        Affiliation:           ETH Zuerich, TIK
+        Version:               $Revision: 1.6 $
+        Creation Date:         
+        Last Date of Change:   $Date: 1998/03/31 17:56:54 $      by: $Author: gfa $
+*/
+
+OUTPUT_FORMAT("ecoff-bigmips")
+ENTRY(__start)
+SECTIONS
+{
+    /* kernel code is relocated to start at 0x80020000 which leaves
+     * room for the boot stack (starting at the same address but grows
+     * downwards on most processors) and the exception vectors of the mips
+     */
+    .text  0x80020000 : {
+	*(.init)
+	*(.text)
+	*(.fini)
+    }
+    /* start at a fresh page for the data */
+    . = ALIGN(0x1000); 
+    .rdata . : {
+	*(.rdata)
+    }
+    .data  . : {
+	*(.data)
+    }
+    .sbss  . : {
+	*(.sbss)
+	*(.scommon)
+    }
+    .bss  . : {
+	*(.bss)
+	*(COMMON)
+    }
+}
+ 
