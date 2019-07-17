@@ -27,7 +27,7 @@ include Makefile.mips
 OBJ=$(ARCH).obj
 DEBUG=-g
 CCDEBUG=$(DEBUG) -ggdb
-CFLAGS=$(MACHINE_CFLAGS) $(CCDEBUG) -Wall
+CFLAGS=-G0 $(MACHINE_CFLAGS) $(CCDEBUG) -Wall
 DIRS=Topsy Memory IO IO/Drivers IO/Drivers/FPGA_Prog Threads Startup
 ALLDIRS=$(DIRS) $(addsuffix /${ARCH}, $(DIRS)) 
 INC=$(addprefix -I, $(ALLDIRS))
@@ -79,30 +79,45 @@ $(OBJ):
 	mkdir $(OBJ) $(addprefix $(OBJ)/, $(ALLDIRS))
 
 # this builds the Topsy kernel
-kernel: kernel.ecoff kernel.bin
-kernel.ecoff: $(REALKERNELOBJS) link.scr
-	$(LD) $(DEBUG) -o kernel.ecoff $(REALKERNELOBJS) -T link.scr
+kernel: kernel.elf32 kernel.bin kernel.dump kernel.sym kernel.dis
+kernel.elf32: $(REALKERNELOBJS) link.scr
+	$(LD) $(DEBUG) -o kernel.elf32 $(REALKERNELOBJS) -T link.scr
 kernel.bin: $(REALKERNELOBJS) link.scr
-	$(LD) $(DEBUG) -oformat binary -o kernel.bin $(REALKERNELOBJS) -T link.scr
+	$(LD) $(DEBUG) --oformat binary -o kernel.bin $(REALKERNELOBJS) -T link.scr
+kernel.dump: kernel.elf32
+	$(OBJDUMP) -x $< > $@
+kernel.dis: kernel.elf32
+	$(OBJDUMP) -D -j .text $< > $@
+kernel.sym: kernel.elf32
+	$(NM) $< | grep ' T ' > $@ || true
 
 # the user process has its own makefile
-user:
+user.srec:
 	$(MAKE) -C User
+user.dump: user.elf32
+	$(OBJDUMP) -x $< > $@
+user.dis: user.elf32
+	$(OBJDUMP) -D -j .text $< > $@
+user.sym: user.elf32
+	$(NM) $< | grep ' T ' > $@ || true
 
 # user and kernel need to be joined for download
-bootlink:	kernel user
-	$(SIZE) -Ax kernel.ecoff > kSize
-	$(SIZE) -Ax user.ecoff > uSize
+bootlink:	kernel user.srec user.dump user.sym user.dis
+	$(SIZE) -Ax kernel.elf32 > kSize
+	$(SIZE) -Ax user.elf32 > uSize
 	(cd BootLinker; \
 	java BootLinker ../kSize ../uSize ../user.srec $(SEGMAP) $(USERINKERNELAT); \
 	mv segmap.bin .. )
-	$(OBJCOPY) kernel.ecoff \
-	--adjust-section-vma=".user"=+0x$(USERINKERNELAT) \
-	--add-section=".user"=user.bin \
-	--adjust-section-vma=".segmap"=+0x$(SEGMAP) \
-	--add-section=".segmap"=segmap.bin \
-	--target=ecoff-bigmips topsy.ecoff
-	$(OBJCOPY) --target=srec topsy.ecoff topsy.srec	
+	$(OBJCOPY) kernel.elf32 \
+	--adjust-section-vma ".user"=0x$(USERINKERNELAT) \
+	--add-section ".user"=user.bin \
+        --set-section-flags ".user"=alloc \
+	--adjust-section-vma ".segmap"=0x$(SEGMAP) \
+	--add-section ".segmap"=segmap.bin \
+        --set-section-flags ".segmap"=alloc \
+	--target=elf32-bigmips topsy.elf32
+	$(OBJCOPY) -g --target=srec topsy.elf32 topsy.srec	
+	$(OBJDUMP) -x topsy.elf32 > topsy.dump
 
 # this is the tool which generates the segmap
 bootlinker:	BootLinker/BootLinker.class
@@ -111,17 +126,17 @@ bootlinker:	BootLinker/BootLinker.class
 clean:
 	(cd User; $(MAKE) clean)
 	$(RM) -rf $(OBJ)
-	$(RM) -f kernel.bin kernel.ecoff kernel.srec \
-		 user.ecoff user.bin user.srec \
+	$(RM) -f kernel.bin kernel.elf32 kernel.srec kernel.dump kernel.sym kernel.dis \
+		 user.elf32 user.bin user.srec user.dump user.sym user.dis \
 		 segmap.bin segmap.srec \
-		 topsy.ecoff topsy.srec \
+		 topsy.elf32 topsy.srec topsy.dump \
 		 kSize uSize segmap *~ *.bak 
 	$(RM) -f Startup/*.bak Startup/*~ Startup/$(ARCH)/*.bak Startup/$(ARCH)/*~  Memory/*.bak Memory/*~ Memory/$(ARCH)/*.bak Memory/$(ARCH)/*~ Threads/*.bak Threads/*~ Threads/$(ARCH)/*.bak Threads/$(ARCH)/*~ IO/*.bak IO/*~ IO/$(ARCH)/*.bak IO/$(ARCH)/*~ Topsy/*~ Topsy/*.bak Topsy/$(ARCH)/*~ Topsy/$(ARCH)/*.bak BootLinker/*~ BootLinker/*.bak BootLinker/*.class IO/Drivers/*.bak IO/Drivers/*~
 
 # this is a practical command to show some statistics on source and object size
 size:
 	wc -l Topsy/*.[ch] Startup/*.[ch] Startup/$(ARCH)/*.[chS] Memory/*.[ch] Memory/$(ARCH)/*.[chS] Threads/*.[ch] Threads/$(ARCH)/*.[chS] IO/*.[ch] IO/Drivers/*.[chS] IO/$(ARCH)/*.[chS]
-	$(SIZE) kernel.ecoff $(REALKERNELOBJS) | sort -n -r
-	$(SIZE) user.ecoff User/mips.obj/* | sort -n -r
-	$(SIZE) -Ax topsy.ecoff
+	$(SIZE) kernel.elf32 $(REALKERNELOBJS) | sort -n -r
+	$(SIZE) user.elf32 User/mips.obj/* | sort -n -r
+	$(SIZE) -Ax topsy.elf32
 

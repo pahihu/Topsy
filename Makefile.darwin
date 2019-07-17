@@ -41,9 +41,11 @@
 #
 #
 
-GNUMIPS=/usr/cygnus/progressive/H-sparc-sun-solaris2/bin
-CC=$(GNUMIPS)/mips-idt-ecoff-gcc
-LD=$(GNUMIPS)/mips-idt-ecoff-ld
-OBJCOPY=$(GNUMIPS)/mips-idt-ecoff-objcopy
-SIZE=$(GNUMIPS)/mips-idt-ecoff-size
+GNUMIPS=$(HOME)/cross/mipstools/bin
+CC=$(GNUMIPS)/mips-idt-elf-gcc
+LD=$(GNUMIPS)/mips-idt-elf-ld
+OBJCOPY=$(GNUMIPS)/mips-idt-elf-objcopy
+SIZE=$(GNUMIPS)/mips-idt-elf-size
+OBJDUMP=$(GNUMIPS)/mips-idt-elf-objdump
+NM=$(GNUMIPS)/mips-idt-elf-nm
 

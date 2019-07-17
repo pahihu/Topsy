@@ -26,9 +26,9 @@ include ../Makefile.mips
 
 # the usual options and defines, includes for the syscall library
 DEBUG=-g
-CCDEBUG=-ggdb
+CCDEBUG=$(DEBUG) -ggdb
 OBJ=$(ARCH).obj
-CFLAGS=-G -Wall $(CCDEBUG) 
+CFLAGS=-G0 $(MACHINE_CFLAGS) -Wall $(CCDEBUG) 
 LDFLAGS=$(DEBUG)
 INC=-I../Topsy -I../Topsy/$(ARCH) -I../Memory -I../IO -I../Threads
 OPTIMIZE = -O2
@@ -61,9 +61,9 @@ $(OBJ)/%.o: %.c $(OBJ)
 
 # shell and user targets (simulator, debugger, and linker need different obj formats)
 user:   $(REALOBJS) $(SYSCALL) link.scr
-	$(LD) $(LDFLAGS) -o ../user.srec $(OBJ)/*.o $(SYSCALL) -T link.scr
-	$(LD) $(LDFLAGS) -o ../user.bin -oformat binary  $(OBJ)/*.o $(SYSCALL) -T link.scr
-	$(LD) $(LDFLAGS) -o ../user.ecoff -oformat ecoff-bigmips $(OBJ)/*.o $(SYSCALL) -T link.scr
+	$(LD) $(LDFLAGS) -o ../user.srec $(OBJ)/*.o --oformat srec $(SYSCALL) -T link.scr
+	$(LD) $(LDFLAGS) -o ../user.bin --oformat binary  $(OBJ)/*.o $(SYSCALL) -T link.scr
+	$(LD) $(LDFLAGS) -o ../user.elf32 --oformat elf32-bigmips $(OBJ)/*.o $(SYSCALL) -T link.scr
 
 # this rule makes mips.obj/
 $(OBJ):
@@ -71,7 +71,7 @@ $(OBJ):
 
 # remove temporary stuff
 clean:	
-	$(RM) -f ../user ../user.srec *.bak *~
+	$(RM) -f ../user.elf32 ../user.bin ../user.srec *.bak *~
 	$(RM) -rf $(OBJ)
 
 

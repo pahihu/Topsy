@@ -113,11 +113,11 @@ void ioMain(ThreadArg arg) {
     ioDeviceTable[IO_SERIAL_A].extension = &(ioDeviceTable[IO_SERIAL_B]);
 
     for (i = 0; i < IO_DEVCOUNT; i++) {
-        //ioConsolePutString("[");
-        //ioConsolePutString(ioDeviceTable[i].name);
-        //ioConsolePutString("] ");
-        //ioDelayAtLeastCycles(1000);
-        //ioConsolePutString("\n");
+        ioConsolePutString("[");
+        ioConsolePutString(ioDeviceTable[i].name);
+        ioConsolePutString("] ");
+        ioDelayAtLeastCycles(1000);
+        ioConsolePutString("\n");
 	if (ioDeviceTable[i].init != NULL) {
 		ioDeviceTable[i].init( &(ioDeviceTable[i]) );
 	}

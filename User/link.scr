@@ -19,8 +19,8 @@
         Last Date of Change:   $Date: 1998/03/26 19:15:21 $      by: $Author: gfa $
         
 */
-/*OUTPUT_FORMAT("ecoff-bigmips")*/
-OUTPUT_FORMAT("srec")
+/*OUTPUT_FORMAT("elf32-bigmips")*/
+/*OUTPUT_FORMAT("srec")*/
 
 /* since topsy sets up a decent context with sp and fp we can start at main */
 ENTRY(main) 
@@ -36,17 +36,17 @@ SECTIONS
     /* force user data to follow user code */ 
     . = ADDR(.text) + SIZEOF(.text);
     . = ALIGN(0x1000);
-    .rdata . : AT ( 0x80020000 + ADDR(.rdata) ) {
-	    *(.rdata)
+    .rodata . : {
+	    *(.rodata)
     }
-    .data  . : AT ( 0x80020000 + ADDR(.data) ) {
+    .data  . : {
 	    *(.data)
     }
-    .sbss  . : AT ( 0x80020000 + ADDR(.sbss) ) {
+    .sbss  . : {
 	    *(.sbss)
 	    *(.scommon)
     }
-    .bss  .  : AT ( 0x80020000 + ADDR(.bss) ) {
+    .bss  .  : {
 	    *(.bss)
 	    *(COMMON)
     }

@@ -32,10 +32,10 @@
  * startup and on catastrophic events/debugging...
  */ 
 void ioConsoleInit() {
-    char* command = (char*)(CONSOLE_BASE + COMMAND_REGISTER);
-    char* mode = (char*)(CONSOLE_BASE + MODE_REGISTER);
-    char* status = (char*)(CONSOLE_BASE + STATUS_REGISTER);
-    char* interrupt = (char*)(UART_A_BASE + INTERRUPT_REGISTER);
+    volatile char* command = (char*)(CONSOLE_BASE + COMMAND_REGISTER);
+    volatile char* mode = (char*)(CONSOLE_BASE + MODE_REGISTER);
+    volatile char* status = (char*)(CONSOLE_BASE + STATUS_REGISTER);
+    volatile char* interrupt = (char*)(UART_A_BASE + INTERRUPT_REGISTER);
 
     *command = 0xa;	/* disable rx/tx */
     ioDelayAtLeastCycles( NBCYCLESFORDELAY);
@@ -54,8 +54,8 @@ void ioConsoleInit() {
 
 void ioConsolePutChar(char c)
 {
-    char* transmit; 
-    char* status;
+    volatile char* transmit; 
+    volatile char* status;
 
     transmit = (char*)(CONSOLE_BASE + TX_REGISTER);
     status = (char*)(CONSOLE_BASE + STATUS_REGISTER);

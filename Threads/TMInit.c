@@ -110,6 +110,9 @@ void tmInit( Address mmStack, Address tmStack, Address userInit)
     schedulerSetReady(&tmThread);
 
     INFO("MM and TM threads initialized and set to ready status");
+    // ioConsolePutString("userInit: ");
+    // ioConsolePutHexInt(userInit);
+    // ioConsolePutString("\n");
     
     schedule();					/* first thread is picked */
 

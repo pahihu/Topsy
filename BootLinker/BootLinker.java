@@ -61,16 +61,18 @@ public class BootLinker extends Object {
 //				  "29" + // const length 41 bytes
 //				argv[3]);	// where it goes (segmap addr)	
 	    segmapFile.seek(0);						   
-	    parseSizeFile(kSizeFile, segmapFile); // size/start info kernel	
-	    parseSizeFile(iSizeFile, segmapFile); // size/start info init	
+	    parseSizeFile("KERNEL", kSizeFile, segmapFile); // size/start info kernel	
+	    parseSizeFile("  INIT", iSizeFile, segmapFile); // size/start info init	
 	    try {
 		while (true) {
 		    s = userSrec.readLine();
 		    if ((s.charAt(0) == 'S') && (s.charAt(1) == '7')) {
+			int s7;
 			//segmapFile.writeBytes(s.substring(4,12));
-			segmapFile.writeInt(
-			    Integer.parseInt(s.substring(4,12), 16)
-			);						
+			s7 = Integer.parseInt(s.substring(4,12), 16);
+			// XXX s7 += 0x80040000;
+			segmapFile.writeInt(s7);
+			System.out.println("       STARTAT: 0x" + toHexString(s7));
 		    }
 		}
 	    }
@@ -78,6 +80,7 @@ public class BootLinker extends Object {
 	    }
 	    // write the user-in-kernel-address at the end
 	    segmapFile.writeInt((int)Long.parseLong(argv[4], 16));
+	    System.out.println("USERINKERNELAT: 0x" + argv[4]);
 
 //	    if (segmapFile.getFilePointer() != 84) {
 //		System.out.print("BootLinker: couldn't write segmap\n");
@@ -91,37 +94,73 @@ public class BootLinker extends Object {
 		throw e;
 	}	
     }
+
+    static String toHexString(int val) {
+        return String.format("%1$08x", val);
+    }
     
-    static void parseSizeFile(RandomAccessFile sizeFile, RandomAccessFile out) 
+    static void parseSizeFile(String msg, RandomAccessFile sizeFile, RandomAccessFile out) 
 							    throws IOException{
+	boolean dbg = false;
 	int addr = 0, size = 0;
+	int seg_size, seg_addr;
 	// expect text
 	if (expect(sizeFile, ".text")) {
 	    size = readHexInt(sizeFile); addr = readHexInt(sizeFile);
+	    // XXX if ((addr & 0x80000000) == 0) addr += 0x80040000;
 	}
 //	writeHexInt(out, size); writeHexInt(out, addr); 	
 	out.writeInt( size); out.writeInt(addr); 	
+	System.out.println(msg + "TEXTSIZE: 0x" + toHexString(size));
+	System.out.println(msg + "TEXTADDR: 0x" + toHexString(addr));
 
 	// expect data, add sizes up and find start address by minimizing
 	size = 0; addr = 0;
 	if (expect(sizeFile, ".data")) {
-	    size = readHexInt(sizeFile);
-	    addr = readHexInt(sizeFile);
+	    seg_size = readHexInt(sizeFile);
+	    seg_addr = readHexInt(sizeFile);
+	    if (dbg)
+	    System.out.println("\t.data\t0x" + toHexString(seg_size) + "\t0x" + toHexString(seg_addr));
+	    size = seg_size;
+	    addr = seg_addr;
 	}
-	if (expect(sizeFile, ".rdata")) {
-	    size += readHexInt(sizeFile); 
-	    addr = Math.min(addr, readHexInt(sizeFile));
+	if (expect(sizeFile, ".rodata.str1.4 ")) {
+	    seg_size = readHexInt(sizeFile);
+	    seg_addr = readHexInt(sizeFile);
+	    if (dbg)
+	    System.out.println("\t.rodata.str1.4\t0x" + toHexString(seg_size) + "\t0x" + toHexString(seg_addr));
+	    size += seg_size;
+	    addr = Math.min(addr, seg_addr);
 	}
-	if (expect(sizeFile, ".bss")) {
-	    size += readHexInt(sizeFile); 
-	    addr = Math.min(addr, readHexInt(sizeFile));
+	if (expect(sizeFile, ".rodata ")) {
+	    seg_size = readHexInt(sizeFile);
+	    seg_addr = readHexInt(sizeFile);
+	    if (dbg)
+	    System.out.println("\t.rodata\t0x" + toHexString(seg_size) + "\t0x" + toHexString(seg_addr));
+	    size += seg_size;
+	    addr = Math.min(addr, seg_addr);
 	}
 	if (expect(sizeFile, ".sbss")) {
-	    size += readHexInt(sizeFile); 
-	    addr = Math.min(addr, readHexInt(sizeFile));
+	    seg_size = readHexInt(sizeFile);
+	    seg_addr = readHexInt(sizeFile);
+	    if (dbg)
+	    System.out.println("\t.sbss\t0x" + toHexString(seg_size) + "\t0x" + toHexString(seg_addr));
+	    size += seg_size;
+	    addr = Math.min(addr, seg_addr);
+	}
+	if (expect(sizeFile, ".bss")) {
+	    seg_size = readHexInt(sizeFile);
+	    seg_addr = readHexInt(sizeFile);
+	    if (dbg)
+	    System.out.println("\t.bss\t0x" + toHexString(seg_size) + "\t0x" + toHexString(seg_addr));
+	    size += seg_size;
+	    addr = Math.min(addr, seg_addr);
 	}
 //	writeHexInt(out, size); writeHexInt(out, addr);
+	// XXX if ((addr & 0x80000000) == 0) addr += 0x80020000;
 	out.writeInt( size); out.writeInt(addr); 	
+	System.out.println(msg + "DATASIZE: 0x" + toHexString(size));
+	System.out.println(msg + "DATAADDR: 0x" + toHexString(addr));
     }
     
     static void writeHexInt(RandomAccessFile segmapFile, int hex) 
@@ -157,18 +196,18 @@ public class BootLinker extends Object {
 	    
     static int readHexInt(RandomAccessFile f) throws IOException {
 	    int value = 0, tmp;
+	    // System.out.print("readHexInt: ");
 	    // skip white space
 	    byte c = f.readByte();
 	    while ((c == ' ') || (c == '\t')) {
 		    c = f.readByte();
 	    }
-	    int i = 28;
 	    while (isHex(c)) {
 		    tmp = readHexByte(c);
-		    value |= ((tmp & 0xf) << i);
-		    i-=4; c = f.readByte();
+		    value = (value << 4) + (tmp & 0xf);
+		    c = f.readByte();
 	    }
-	    return (value >>> (i+4));
+	    return value;
     }
 	    
     static byte readHexByte(byte b) {
@@ -186,7 +225,7 @@ public class BootLinker extends Object {
     }
 	    
     static boolean isHex(byte c) {		 
-	    return ((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'f'));
+	    return ((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'f')) || (c == 'x');
     }		
 }
 
