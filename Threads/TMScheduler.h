@@ -43,4 +43,4 @@ void schedule();
 void tmClockHandler();
 void tmIdleMain();
 
-#endif __TMSCHEDULER_H
+#endif /* __TMSCHEDULER_H */

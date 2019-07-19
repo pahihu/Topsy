@@ -29,4 +29,4 @@
 
 void tmMain( ThreadArg userInitAddress);
 
-#endif __TMMAIN_H
+#endif /* __TMMAIN_H */

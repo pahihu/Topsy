@@ -1,2 +1,5 @@
 - mips-idt-elf toolchain (binutils 2.18, gcc 3.4.6, gdb 6.3, newlib 1.13.0)
 - tested on macOS V10.13.6 "High Sierra"
+
+- LCC 4.2 mips/irix cross-compiler port
+- resulting executable topsy.srec does not work yet

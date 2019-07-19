@@ -35,7 +35,7 @@ void Testback1(ThreadArg arg) {
 
 void trap () 
 {
-  int* i = 5;
+  int* i = (int *)(5);
   
   *i = 1;
 }

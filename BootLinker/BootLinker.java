@@ -140,6 +140,14 @@ public class BootLinker extends Object {
 	    size += seg_size;
 	    addr = Math.min(addr, seg_addr);
 	}
+	if (expect(sizeFile, ".sdata")) {
+	    seg_size = readHexInt(sizeFile);
+	    seg_addr = readHexInt(sizeFile);
+	    if (dbg)
+	    System.out.println("\t.sdata\t0x" + toHexString(seg_size) + "\t0x" + toHexString(seg_addr));
+	    size += seg_size;
+	    addr = Math.min(addr, seg_addr);
+	}
 	if (expect(sizeFile, ".sbss")) {
 	    seg_size = readHexInt(sizeFile);
 	    seg_addr = readHexInt(sizeFile);

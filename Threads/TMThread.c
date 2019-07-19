@@ -106,7 +106,7 @@ void threadBuild( ThreadId id,
 		  Thread* threadPtr)
 {
     Message threadExitMsg = {TMTHREADID, TM_EXIT, {{NULL, NULL, NULL}}};
-    int exitCodeLength = endAutomaticThreadExit - automaticThreadExit;
+    int exitCodeLength = FN_PTRDIFF(endAutomaticThreadExit, automaticThreadExit);
     Register mode;
     Register sp;
 
@@ -172,7 +172,7 @@ void threadBuild( ThreadId id,
 	      sizeof(Message));
     byteCopy((char*)(threadPtr->stackStart) - sizeof(Message) - 
     							exitCodeLength + 4,
-	      automaticThreadExit,
+	      (void*)automaticThreadExit,
 	      exitCodeLength);
 }
 

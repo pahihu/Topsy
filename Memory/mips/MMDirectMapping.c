@@ -95,7 +95,7 @@ Error  mmAddressSpaceRange(AddressSpace space, Address* addressPtr,
 	*sizePtr = (PHYSMEM-USERMEM); /* 768kB */
     }
     else if (space == USER) {
-    	*addressPtr = (Address)KUSEG_BASE + PAGESIZE; /* zero page invalid */
+    	*addressPtr = (char*)KUSEG_BASE + PAGESIZE; /* zero page invalid */
 	*sizePtr = USERMEM;           /* 256kB */
     }
     else return MM_ADDRESSSPACERANGEFAILED;

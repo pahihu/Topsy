@@ -45,7 +45,7 @@ void Res_Thread(int i)
     /* Hole eigene ThreadId */
     if (tmGetInfo(SELF, &myid, &parent) < 0) {
         display(tty,"tmGetInfo failed\n");
-        exit(-1);
+        /* exit(-1); */
     }    
     /* initalisieren der Variabeln */
     myreserved = 0;

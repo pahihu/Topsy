@@ -262,4 +262,5 @@ typedef struct Message_t {     /* Main message structure */
 } Message;
 
 
-#endif __MESSAGES_H
+#endif /* __MESSAGES_H */
+

@@ -51,7 +51,7 @@ void dummyExceptionHandler(ThreadId id)
     WARNING("No exception handler has been set yet");
 }
 
-void dummyInterruptHandler()
+void dummyInterruptHandler(void *ptr)
 {
     WARNING("No interrupt handler has been set yet");
 }

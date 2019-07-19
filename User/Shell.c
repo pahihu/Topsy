@@ -87,7 +87,7 @@ static void readChar(ThreadId driver, char *c) {
 /* includes backspace and echo */
 static void readLine(ThreadId driver, char* buf, char* oldbuf,int max)
 {
-  unsigned char c = '\0';
+  char c = '\0';
   int i = 0;
   unsigned long int one = 1;
 

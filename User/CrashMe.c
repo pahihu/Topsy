@@ -52,7 +52,7 @@ void sleepy()
 
 static long int valuesOfInterest [] = {
   
-NULL, 0xffffffff, 0x00000000, CHAR_BIT, SCHAR_MIN,
+(long int)NULL, 0xffffffff, 0x00000000, CHAR_BIT, SCHAR_MIN,
 SCHAR_MAX, UCHAR_MAX, CHAR_MIN, CHAR_MAX, SHORT_MIN,
 SHORT_MAX, UNSIGNED_SHORT_MAX, INT_MAX, INT_MIN, UNSIGNED_INT_MAX,
 0x80000000, 0x80000000, 0x90000000, 0xa0000000, 0xb0000000,
@@ -342,7 +342,7 @@ void childSyscallTest( ThreadParam* p)
     /* Writing/Reading garbage inside allocated regions */
 #if 1
     for (i=0;i<VM_NBAREAS*VM_AREASIZE;i++) {
-	(char)*((char*)area[i%VM_NBAREAS]+i%VM_AREASIZE) = 'o';
+	*((char*)area[i%VM_NBAREAS]+i%VM_AREASIZE) = 'o';
 	car = (char)*((char*)area[i%VM_NBAREAS]+i%VM_AREASIZE);
 	if (car != 'o') display(p->tty, "CHILD: VM read/write inconsistent\n");
     }
@@ -575,8 +575,9 @@ void displayStatistics(int tty)
 }
 
 
-void crashMeMaster( char* argArray[] )
+void crashMeMaster( void *pArg )
 {
+    char **argArray;
     ThreadId tty;
     int i=0, j, k;
     int id = SYSCALL_TEST;  /* to be changed */
@@ -585,6 +586,8 @@ void crashMeMaster( char* argArray[] )
     char string[10];
     int charSize=1;
     int ascCode;
+
+    argArray = (char **)pArg;
     
     ioOpen(IO_CONSOLE, &tty);
     ioInit(tty);

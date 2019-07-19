@@ -41,3 +41,4 @@ void unlock(Lock lock);
 Boolean lockTry(Lock lock);
 
 #endif
+

@@ -65,4 +65,5 @@ void initBasicExceptions();
 
 char* getCurrentThreadName();
 
-#endif __THREADS_H
+#endif /* __THREADS_H */
+

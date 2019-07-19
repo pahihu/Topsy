@@ -42,8 +42,8 @@
 #
 
 GNUMIPS=/opt/mipstools/bin
-CC=$(GNUMIPS)/mips-idt-elf-gcc
-CPP=$(GNUMIPS)/mips-idt-elf-cpp
+CC=/opt/mipslcc/lcc
+CPP=/opt/mipslcc/cpp
 AS=$(GNUMIPS)/mips-idt-elf-as
 LD=$(GNUMIPS)/mips-idt-elf-ld
 OBJCOPY=$(GNUMIPS)/mips-idt-elf-objcopy

@@ -59,4 +59,4 @@ void threadBuild( ThreadId id,
 
 ThreadId startMinimalIdleThread();
 
-#endif __TMTHREAD_H
+#endif /* __TMTHREAD_H */

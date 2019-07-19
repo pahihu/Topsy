@@ -72,13 +72,13 @@ void tmInstallExceptionCode()
     /* Installation of default basic exception handlers */
     /* INSTALL generalExceptionHandler AT LOCATION 0x8000_0080 */
     byteCopy( (Address)VEC_EXCEPTION, generalExceptionHandler, 
-	      endGeneralExceptionHandler-generalExceptionHandler);
+	      FN_PTRDIFF(endGeneralExceptionHandler,generalExceptionHandler));
 
     /* INSTALL UTLBMissHandler AT LOCATION 0x8000_0000 */
-    if (endUTLBMissHandler-UTLBMissHandler > 0x00000080) 
+    if (FN_PTRDIFF(endUTLBMissHandler, UTLBMissHandler) > 0x00000080) 
 	PANIC("utlbmisshandler larger than 0x80 bytes");
     byteCopy( (Address)VEC_TLB_UMISS, UTLBMissHandler,  
-	      endUTLBMissHandler-UTLBMissHandler);
+	      FN_PTRDIFF(endUTLBMissHandler, UTLBMissHandler));
 
     /* RESETHandler AT LOCATION 0xbfc0_0000 is in EPROMs */
 }    

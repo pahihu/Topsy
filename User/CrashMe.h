@@ -31,4 +31,5 @@ typedef struct ThreadParam_t {
     ThreadId tty;
 } ThreadParam;
 
-void crashMeMaster( char* argArray[] );
+/* void crashMeMaster( char* argArray[] ); */
+void crashMeMaster( void* pArg );

@@ -1,0 +1,146 @@
+#
+#	Copyright (c) 1996-1997 Swiss Federal Institute of Technology, 
+#	Computer Engineering and Networks Laboratory. All rights reserved.
+#
+#	TOPSY - A Teachable Operating System. 
+#		Implementation of a tiny and simple micro kernel for
+#		teaching purposes.
+#
+#	Permission to use, copy, modify, and distribute this software and its
+#	documentation for any purpose, without fee, and without written 
+#	agreement is hereby granted, provided that the above copyright notice 
+#	and the following two paragraphs appear in all copies of this software.
+#
+#	File:                  $Source: /proj/topsy/ss98/Topsy/RCS/Makefile,v $
+# 	Author(s):             
+# 	Affiliation:           ETH Zuerich, TIK
+# 	Version:               $Revision: 1.54 $
+# 	Creation Date:         
+# 	Last Date of Change:   $Date: 1998/04/07 16:50:58 $      by: $Author: fiedler $
+
+# host platform
+include Makefile.platform
+# all architecture dependent information is here
+include Makefile.mips
+
+# several defines to be reused later
+OBJ=$(ARCH).obj
+DEBUG= -g
+CCDEBUG= $(DEBUG)
+CFLAGS= $(MACHINE_CFLAGS) -A $(CCDEBUG)
+LDFLAGS= -G0
+DIRS=Topsy Memory IO IO/Drivers IO/Drivers/FPGA_Prog Threads Startup
+ALLDIRS=$(DIRS) $(addsuffix /${ARCH}, $(DIRS)) 
+INC=$(addprefix -I, $(ALLDIRS))
+DEFS = -DDEBUG_LEVEL=2
+OPTIMIZE = -O2
+
+# here come the source files by module
+ST=Startup
+STFILES=$(ST)/Startup.c $(ST)/$(ARCH)/start.S
+TO=Topsy
+TOFILES=$(TO)/HashList.c $(TO)/List.c $(TO)/Support.c $(TO)/Syscall.c \
+	$(TO)/$(ARCH)/SyscallMsg.S $(TO)/Error.c $(TO)/Lock.c \
+	$(TO)/$(ARCH)/SupportAsm.S $(TO)/$(ARCH)/Exception.c
+MM=Memory
+MMFILES=$(MM)/MMInit.c $(MM)/$(ARCH)/MMDirectMapping.c \
+	$(MM)/$(ARCH)/MMError.c $(MM)/MMHeapMemory.c $(MM)/MMMain.c \
+	$(MM)/MMVirtualMemory.c $(MM)/$(ARCH)/tlb.S
+TM=Threads
+TMFILES=$(TM)/TMInit.c $(TM)/TMIPC.c $(TM)/TMMain.c \
+	$(TM)/TMScheduler.c $(TM)/TMThread.c $(TM)/$(ARCH)/TMHal.c \
+	$(TM)/$(ARCH)/TMError.c $(TM)/$(ARCH)/TMHalAsm.S $(TM)/$(ARCH)/TMClock.c
+IO=IO
+IOFILES=$(IO)/IOMain.c $(IO)/IODevice.c $(IO)/$(ARCH)/IOHal.c \
+	$(IO)/IOConsole.c $(IO)/Drivers/SCN2681_DUART.c \
+	$(IO)/Drivers/FPGA_Comm.c $(IO)/Drivers/FPGA_Prog/fpga_prog.c \
+	$(IO)/Drivers/FPGA_Prog/fpgadata.c $(IO)/Drivers/Loopback.c \
+	$(IO)/Drivers/intel8254.c
+
+# here we define lists of all source and all object filenames (with path)
+KERNELFILES=$(STFILES) $(TOFILES) $(MMFILES) $(TMFILES) $(IOFILES)
+KERNELOBJS=$(KERNELFILES:.c=.o) $(KERNELFILES:.S=.o)
+REALKERNELOBJS=$(addsuffix .o, $(addprefix $(OBJ)/, $(basename $(KERNELFILES))))
+
+
+all: kernel user bootlinker bootlink
+
+# here are the main rules for optimized C, non-optimized C, Assembler, and Java code
+$(OBJ)/%.o: %.c $(OBJ)
+	$(CC) $(CFLAGS) $(INC) $(DEFS) $(OPTIMIZE) -DSEGMAP=$(HEXSEGMAP) -c $< -o $@
+${OBJ}/$(TM)/$(ARCH)/TMClock.o: $(OBJ)/%.o: %.c $(OBJ)
+	$(CC) $(CFLAGS) $(INC) $(DEFS) -DSEGMAP=$(HEXSEGMAP) -c $< -o $@
+#	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+$(OBJ)/%.o: %.S $(OBJ)
+	$(CPP) $(CFLAGS) $(INC) $< > /tmp/${<F}.s
+	$(CC) $(CFLAGS) -c /tmp/${<F}.s -o $@
+	$(RM) -f /tmp/${<F}.s
+%.class: %.java
+	javac -O $<
+
+# this rule makes a tree of directories under mips.obj
+$(OBJ):
+	mkdir $(OBJ) $(addprefix $(OBJ)/, $(ALLDIRS))
+
+# this builds the Topsy kernel
+kernel: kernel.elf32 kernel.bin kernel.dump kernel.sym kernel.dis
+kernel.elf32: $(REALKERNELOBJS) link.scr
+	$(LD) $(LDFLAGS) $(DEBUG) -o kernel.elf32 $(REALKERNELOBJS) -T link.scr
+kernel.bin: $(REALKERNELOBJS) link.scr
+	$(LD) $(LDFLAGS) $(DEBUG) --oformat binary -o kernel.bin $(REALKERNELOBJS) -T link.scr
+kernel.dump: kernel.elf32
+	$(OBJDUMP) -x $< > $@
+kernel.dis: kernel.elf32
+	$(OBJDUMP) -D -j .text $< > $@
+kernel.sym: kernel.elf32
+	$(NM) $< | grep ' T ' > $@ || true
+
+# the user process has its own makefile
+user.srec:
+	$(MAKE) -C User
+user.dump: user.elf32
+	$(OBJDUMP) -x $< > $@
+user.dis: user.elf32
+	$(OBJDUMP) -D -j .text $< > $@
+user.sym: user.elf32
+	$(NM) $< | grep ' T ' > $@ || true
+
+# user and kernel need to be joined for download
+bootlink:	kernel user.srec user.dump user.sym user.dis
+	$(SIZE) -Ax kernel.elf32 > kSize
+	$(SIZE) -Ax user.elf32 > uSize
+	(cd BootLinker; \
+	java BootLinker ../kSize ../uSize ../user.srec $(SEGMAP) $(USERINKERNELAT); \
+	mv segmap.bin .. )
+	$(OBJCOPY) kernel.elf32 \
+	--adjust-section-vma ".user"=0x$(USERINKERNELAT) \
+	--add-section ".user"=user.bin \
+        --set-section-flags ".user"=alloc \
+	--adjust-section-vma ".segmap"=0x$(SEGMAP) \
+	--add-section ".segmap"=segmap.bin \
+        --set-section-flags ".segmap"=alloc \
+	--target=elf32-bigmips topsy.elf32
+	$(OBJCOPY) -g --target=srec topsy.elf32 topsy.srec	
+	$(OBJDUMP) -x topsy.elf32 > topsy.dump
+
+# this is the tool which generates the segmap
+bootlinker:	BootLinker/BootLinker.class
+
+# use this to remove temporary files
+clean:
+	(cd User; $(MAKE) clean)
+	$(RM) -rf $(OBJ)
+	$(RM) -f kernel.bin kernel.elf32 kernel.srec kernel.dump kernel.sym kernel.dis \
+		 user.elf32 user.bin user.srec user.dump user.sym user.dis \
+		 segmap.bin segmap.srec \
+		 topsy.elf32 topsy.srec topsy.dump \
+		 kSize uSize segmap *~ *.bak 
+	$(RM) -f Startup/*.bak Startup/*~ Startup/$(ARCH)/*.bak Startup/$(ARCH)/*~  Memory/*.bak Memory/*~ Memory/$(ARCH)/*.bak Memory/$(ARCH)/*~ Threads/*.bak Threads/*~ Threads/$(ARCH)/*.bak Threads/$(ARCH)/*~ IO/*.bak IO/*~ IO/$(ARCH)/*.bak IO/$(ARCH)/*~ Topsy/*~ Topsy/*.bak Topsy/$(ARCH)/*~ Topsy/$(ARCH)/*.bak BootLinker/*~ BootLinker/*.bak BootLinker/*.class IO/Drivers/*.bak IO/Drivers/*~
+
+# this is a practical command to show some statistics on source and object size
+size:
+	wc -l Topsy/*.[ch] Startup/*.[ch] Startup/$(ARCH)/*.[chS] Memory/*.[ch] Memory/$(ARCH)/*.[chS] Threads/*.[ch] Threads/$(ARCH)/*.[chS] IO/*.[ch] IO/Drivers/*.[chS] IO/$(ARCH)/*.[chS]
+	$(SIZE) kernel.elf32 $(REALKERNELOBJS) | sort -n -r
+	$(SIZE) user.elf32 User/mips.obj/* | sort -n -r
+	$(SIZE) -Ax topsy.elf32
+

@@ -64,4 +64,4 @@ Error setClockValue( ClockId cId, int period, ClockMode cMode);
 
 void tmResetClockInterrupt( ClockId cId);
 
-#endif __TMCLOCK_H
+#endif /* __TMCLOCK_H */

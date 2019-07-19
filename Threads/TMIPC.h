@@ -47,4 +47,4 @@ void initMsgQueue( MessageQueue* queuePtr);
 void ipcResetPendingFlag(Thread* threadPtr);
 void ipcFreeBlockedThreads( ThreadId exitThreadId);
 
-#endif __TMIPC_H
+#endif /* __TMIPC_H */

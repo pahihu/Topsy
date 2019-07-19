@@ -95,4 +95,4 @@ void endUTLBMissHandler();
 void generalExceptionHandler();
 void endGeneralExceptionHandler();
 
-#endif __TMHAL_H
+#endif /* __TMHAL_H */

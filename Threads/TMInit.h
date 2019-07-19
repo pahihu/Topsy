@@ -28,4 +28,4 @@
 #include "tm-include.h"
 #include "Configuration.h"
 
-#endif __TMINIT_H
+#endif /* __TMINIT_H */

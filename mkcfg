@@ -1,0 +1,15 @@
+XCC=gcc
+if [ $# -ne 1 ];
+then
+  echo "usage: mkcfg <gcc|lcc>"
+  exit 1
+fi
+
+if [ $1 = "lcc" ];
+then
+  XCC=lcc
+fi
+cp Makefile.darwin${XCC} Makefile.platform
+cp Makefile.mips${XCC} Makefile.mips
+cp Makefile.${XCC} Makefile
+cp User/Makefile.${XCC} User/Makefile

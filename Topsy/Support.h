@@ -60,4 +60,6 @@ void stringNCopy( char* target, char* source, unsigned long int size);
  */
 Boolean testAndSet(Boolean* lockvar);
 
-#endif __SUPPORT_H
+#define FN_PTRDIFF(endFn,startFn) ((char*)(endFn) - (char*)(startFn))
+
+#endif /* __SUPPORT_H */

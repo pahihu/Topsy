@@ -103,4 +103,4 @@ typedef struct Thread_t {
 } Thread;
 
 
-#endif __TMINCLUDE_H
+#endif /* __TMINCLUDE_H */

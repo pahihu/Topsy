@@ -89,9 +89,9 @@ void ioDeviceMain(IODevice this) {
 	    if (ioCheckBufferAddress(msg.from, msg.msg.ioRead.buffer, 
 				     msg.msg.ioRead.size)) {
 		ret = this->read(this, msg.from, msg.msg.ioRead.buffer,  
-						&(msg.msg.ioRead.size));
+						(long *)&(msg.msg.ioRead.size));
 		reply.msg.ioReadReply.errorCode = IO_READOK;
-		reply.msg.ioReadReply.bytesRead = msg.msg.ioRead.size;
+		reply.msg.ioReadReply.bytesRead = (long) msg.msg.ioRead.size;
 		tmMsgSend(msg.from, &reply);
 	    }
 	    else {
@@ -104,7 +104,7 @@ void ioDeviceMain(IODevice this) {
 	    if (ioCheckBufferAddress(msg.from, msg.msg.ioWrite.buffer, 
 				     msg.msg.ioWrite.size)) {
 		ret = this->write(this, msg.from, msg.msg.ioWrite.buffer, 
-						&(msg.msg.ioWrite.size));
+						(long*)&(msg.msg.ioWrite.size));
 		reply.msg.ioWriteReply.errorCode = IO_WRITEOK;
 		reply.msg.ioWriteReply.bytesWritten = msg.msg.ioWrite.size;
 		tmMsgSend(msg.from, &reply);

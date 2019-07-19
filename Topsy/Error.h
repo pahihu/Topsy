@@ -79,4 +79,5 @@ void info( char* threadName,
 
 void printRegisters();
 
-#endif __ERROR_H
+#endif /* __ERROR_H */
+
