@@ -29,7 +29,7 @@
  */
 #define BOOTMESSAGE "Topsy 1.1 (c) 1996-1998, ETH Zurich, TIK\n($Id: Configuration.h,v 1.8 1998/03/26 19:46:33 gfa Exp $)\n\n"
 
-#if defined(__MIPSEB__) || defined(__BIG_ENDIAN__)
+#if defined(__MIPSEB__) || defined(__BIG_ENDIAN__) || defined(MIPSEB)
 #define TOPSY_BIG_ENDIAN
 #endif
 

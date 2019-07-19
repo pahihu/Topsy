@@ -28,7 +28,7 @@
 #include "Topsy.h"
 #include "cpu.h"
 
-Register getEPC();
-Register getBADVM();
+Register getEPC(void);
+Register getBADVM(void);
 
-#endif __SUPPORT_MIPS_H
+#endif /* __SUPPORT_MIPS_H */

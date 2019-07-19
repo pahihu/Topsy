@@ -56,8 +56,8 @@ SyscallError tmStart( ThreadId* id,
 		      ThreadArg parameter, 
 		      char *name);
 SyscallError tmKill(ThreadId id);
-void tmExit();
-void tmYield();
+void tmExit(void);
+void tmYield(void);
 SyscallError tmGetInfo(ThreadId about, ThreadId* tid, ThreadId* ptid);
 SyscallError tmGetFirst(ThreadInfo* info);
 SyscallError tmGetNext(ThreadInfo* info);

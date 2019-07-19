@@ -61,9 +61,9 @@ void tmInit( Address mmStack,
 void tmMain( ThreadArg userInitAddress);
 
 /* Initialisation of basic exception handlers for init phase */
-void initBasicExceptions();
+void initBasicExceptions(void);
 
-char* getCurrentThreadName();
+char* getCurrentThreadName(void);
 
 #endif /* __THREADS_H */
 

@@ -58,7 +58,7 @@ void stringNCopy( char* target, char* source, unsigned long int size);
 /* support function (in assembler) to test and set memory
  * in one atomic step
  */
-Boolean testAndSet(Boolean* lockvar);
+Boolean testAndSet(volatile Boolean* lockvar);
 
 #define FN_PTRDIFF(endFn,startFn) ((char*)(endFn) - (char*)(startFn))
 

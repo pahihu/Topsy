@@ -29,7 +29,7 @@
 
 
 typedef struct LockDesc_t {
-    Boolean lockVariable;
+    volatile Boolean lockVariable;
 } LockDesc;
 
 typedef LockDesc* Lock;

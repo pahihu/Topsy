@@ -40,7 +40,7 @@ ThreadId threadStart( ThreadMainFunction fctnAddr,
 		      ThreadId parentId,
 		      Boolean lightWeight);
 void threadExit( ThreadId threadId);
-void threadYield();
+void threadYield(void);
 Error threadKill( ThreadId id, ThreadId killerId);
 Error threadInfo( ThreadId id, ThreadId aboutId,
 		  ThreadInfoKind kind, ThreadInfo* infoptr, long int values[]);
@@ -57,6 +57,6 @@ void threadBuild( ThreadId id,
 		  Boolean lightWeightThread,
 		  Thread* threadPtr);
 
-ThreadId startMinimalIdleThread();
+ThreadId startMinimalIdleThread(void);
 
 #endif /* __TMTHREAD_H */

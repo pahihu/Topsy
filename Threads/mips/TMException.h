@@ -27,6 +27,6 @@
 /*
  * Interface functions
  */
-void exception();
-void dispatchException();
-void dispatchInterrupt();
+void exception(void);
+void dispatchException(void);
+void dispatchInterrupt(void);

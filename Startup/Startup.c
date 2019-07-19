@@ -50,4 +50,4 @@ void main() {
 /* local dummy function needed by gcc. main() jumps always here first. this is
  * not really necessary, it's just for keeping the compiler happy
  */
-static void __main() {}
+static void __main(void) {}

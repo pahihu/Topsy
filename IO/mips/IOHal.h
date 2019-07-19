@@ -45,5 +45,5 @@
 #define MAXPUTSTRINGLEN 320
 
 /* those two contain hardware driver code */
-void ioConsoleInit();
+void ioConsoleInit(void);
 void ioConsolePutChar(char c);

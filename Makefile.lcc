@@ -72,7 +72,7 @@ ${OBJ}/$(TM)/$(ARCH)/TMClock.o: $(OBJ)/%.o: %.c $(OBJ)
 	$(CC) $(CFLAGS) $(INC) $(DEFS) -DSEGMAP=$(HEXSEGMAP) -c $< -o $@
 #	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 $(OBJ)/%.o: %.S $(OBJ)
-	$(CPP) $(CFLAGS) $(INC) $< > /tmp/${<F}.s
+	$(CPP) $(INC) $< > /tmp/${<F}.s
 	$(CC) $(CFLAGS) -c /tmp/${<F}.s -o $@
 	$(RM) -f /tmp/${<F}.s
 %.class: %.java

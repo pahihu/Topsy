@@ -31,7 +31,7 @@ static unsigned long int hashFunction(unsigned long int key) {
 }
 
 
-HashList hashListNew() {
+HashList hashListNew(void) {
     Error error;
     int i;
     HashList list;

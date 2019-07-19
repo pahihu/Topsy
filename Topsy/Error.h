@@ -77,7 +77,7 @@ void info( char* threadName,
 	   int line,
 	   char* errorMessage);
 
-void printRegisters();
+void printRegisters(void);
 
 #endif /* __ERROR_H */
 

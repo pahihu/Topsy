@@ -76,23 +76,23 @@ void enableAllInterruptsInContext( ProcContextPtr contextPtr);
 /* installs code by copying generalExceptionHandler()'s and 
  * UTLBMissHandler()'s code at certain mips specific addresses
  */
-void tmInstallExceptionCode();
+void tmInstallExceptionCode(void);
 
 /* Syscall exception handler (set per default as exception handler) */
 void syscallExceptionHandler(ThreadId threadId);
 
 /* Hardware exception handler (set per default as exception handler) */
-void hwExceptionHandler();
+void hwExceptionHandler(long arg);
 
 /* Automatic exit of a thread when stack underflow occurs */
-void automaticThreadExit();
-void endAutomaticThreadExit();
+void automaticThreadExit(void);
+void endAutomaticThreadExit(void);
 
 /* Symbols for the exception handlers (they are implemented in assembly) */
-void UTLBMissHandler();
-void endUTLBMissHandler();
+void UTLBMissHandler(void);
+void endUTLBMissHandler(void);
 
-void generalExceptionHandler();
-void endGeneralExceptionHandler();
+void generalExceptionHandler(void);
+void endGeneralExceptionHandler(void);
 
 #endif /* __TMHAL_H */

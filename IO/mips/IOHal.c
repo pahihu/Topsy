@@ -54,7 +54,7 @@ void ioConsoleInit() {
 
 void ioConsolePutChar(char c)
 {
-    volatile char* transmit; 
+    volatile char* transmit;
     volatile char* status;
 
     transmit = (char*)(CONSOLE_BASE + TX_REGISTER);

@@ -36,11 +36,11 @@ void schedulerRemove( Thread* threadPtr);
 
 Error schedulerSetReady( Thread* threadPtr);
 Error schedulerSetBlocked( Thread* threadPtr);
-Thread* schedulerRunning();
-void schedule();
+Thread* schedulerRunning(void);
+void schedule(void);
 
 /* Clock interrupt handler and idle thread main function */
-void tmClockHandler();
-void tmIdleMain();
+void tmClockHandler(void *arg);
+void tmIdleMain(void);
 
 #endif /* __TMSCHEDULER_H */

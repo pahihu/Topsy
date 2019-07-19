@@ -51,7 +51,7 @@ typedef struct HashList_t {
 typedef HashListDesc* HashList;
 
 
-HashList hashListNew();
+HashList hashListNew(void);
 Error hashListAdd(HashList list, void* data, unsigned long int key);
 Error hashListGet(HashList list, void** data, unsigned long int key);
 Error hashListRemove(HashList list, unsigned long int key);

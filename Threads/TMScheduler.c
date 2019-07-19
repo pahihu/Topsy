@@ -43,7 +43,7 @@ static Lock schedLock = &sLockDesc;
  * directly.
  * it's also the function where we would place clock updates.
  */
-void tmClockHandler()
+void tmClockHandler(void *arg)
 {
     schedule();
 }

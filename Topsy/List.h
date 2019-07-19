@@ -48,7 +48,7 @@ typedef struct ListDesc_t {
 typedef ListDesc* List;
 
 /* basic list functions */
-List listNew();
+List listNew(void);
 Error listFree(List list);
 
 Error listAddInFront(List list, void* item, Address* hint);
